@@ -56,7 +56,7 @@
   // OUTER JOIN(left join と right join) = 複数のテーブルがあり、それらを結合する際に優先テーブルを一つ決め、そこにある情報は全て表示しながら、他のテーブルの情報に対になるデータがあれば表示する
   // 優先テーブルに指定されると、そのテーブルの情報を全て表示される
 
-  $tweet_sql = 'SELECT * FROM `tweets` LEFT JOIN `members` ON `tweets`.`member_id`=`members`.`member_id` ORDER BY `tweets`.`created` DESC';
+  $tweet_sql = 'SELECT * FROM `tweets` LEFT JOIN `members` ON `tweets`.`member_id`=`members`.`member_id` WHERE `delete_flag`=0 ORDER BY `tweets`.`modified` DESC';
   $tweet_stmt = $dbh->prepare($tweet_sql);
   $tweet_stmt->execute();
 
@@ -157,10 +157,16 @@
           </p>
           <p class="day">
             <a href="view.html">
-              <?php echo $one_tweet['created']; ?>
+              <?php 
+              $modify_date = $one_tweet["modified"];
+              // strtotime 文字型のデータを日時型に変換できる
+              $modify_date = date("Y-m-d H:i",strtotime($modify_date));
+
+              echo $modify_date;
+              ?>
             </a>
-            [<a href="#" style="color: #00994C;">編集</a>]
-            [<a href="#" style="color: #F33;">削除</a>]
+            [<a href="edit.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>" style="color: #00994C;">編集</a>]
+            [<a href="delete.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>" style="color: #F33;">削除</a>]
           </p>
         </div>
         <?php } ?>
