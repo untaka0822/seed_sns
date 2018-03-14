@@ -2,39 +2,19 @@
 	session_start();
 	require('dbconnect.php');
 
-	// $_GETの値が空じゃない時 = セットされている時
 	if (!empty($_GET)) {
-		$sql = 'SELECT * FROM `tweets` WHERE `tweet_id`=?';
+		// 投稿一件の詳細
+		$sql = 'SELECT * FROM `tweets` LEFT JOIN `members` ON `tweets`.`member_id`=`members`.`member_id` WHERE `tweet_id`=?';
 		$data = array($_GET['tweet_id']);
 		$stmt = $dbh->prepare($sql);
-  		$stmt->execute($data);
-  		$tweet_edit = $stmt->fetch(PDO::FETCH_ASSOC);
+		$stmt->execute($data);
+		$tweet_view = $stmt->fetch(PDO::FETCH_ASSOC);
 	}
 
-	// POST送信された時
-	if (!empty($_POST)){
-
-	    // 入力チェック
-	    if ($_POST['tweet'] == ''){
-	      $error['tweet'] = 'blank';
-	    }
-
-	    // エラーがセットされていない時
-	    if (!isset($error)) {
-	      // SQL文作成
-	      // Update文
-	      $sql = 'UPDATE `tweets` SET `tweet`=?, `modified`=NOW() WHERE `tweet_id`=?';
-	      //SQL文実行
-	      $data = array($_POST['tweet'], $_GET['tweet_id']);
-	      $stmt = $dbh->prepare($sql);
-	      $stmt->execute($data);
-
-	      //一覧へ移動する
-	      header("Location: index.php");
-	      exit();
-
-	    }
-	}
+	echo '<br>';
+	echo '<br>';
+	var_dump($tweet_view);
+	// var_dump($_SESSION);
 ?>
 
 <!DOCTYPE html>
@@ -70,7 +50,7 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav navbar-right">
-                <li><a href="logout.php">ログアウト</a></li>
+                <li><a href="logout.html">ログアウト</a></li>
               </ul>
           </div>
           <!-- /.navbar-collapse -->
@@ -80,24 +60,26 @@
 
   <div class="container">
     <div class="row">
-      <div class="col-md-6 col-md-offset-3 content-margin-top">
-        <h4>つぶやき編集</h4>
+      <div class="col-md-4 col-md-offset-4 content-margin-top">
         <div class="msg">
-          <form method="POST" action="" class="form-horizontal" role="form">
-              <!-- つぶやき -->
-              <div class="form-group">
-                <label class="col-sm-4 control-label">つぶやき</label>
-                <div class="col-sm-8">
-                  <textarea name="tweet" cols="50" rows="5" class="form-control" placeholder="例：Hello World!"><?php echo $tweet_edit['tweet']; ?></textarea>
-                  <?php if (isset($error) && ($error['tweet'] == 'blank')){ ?>
-                    <p class="error">なにかつぶやいてください。</p>
-                  <?php  } ?>
-                </div>
-              </div>
-            <ul class="paging">
-              <input type="submit" class="btn btn-info" value="更新">
-            </ul>
-          </form>
+          <img src="picture_path/<?php echo $tweet_view['picture_path']; ?>" width="100" height="100">
+          <p>投稿者 : <span class="name"> <?php echo $tweet_view['nick_name']; ?> </span></p>
+          <p>
+            つぶやき : <br>
+            <?php echo $tweet_view['tweet']; ?>
+          </p>
+          <p class="day">
+            <?php
+              $modify_date = $tweet_view['modified'];
+              // strtotime 文字型のデータを日時型に変換できる
+              $modify_date = date("Y-m-d H:i", strtotime($modify_date));
+
+              echo $modify_date;
+            ?>
+            <?php if ($_SESSION['id'] == $tweet_view['member_id']) { ?>
+            [<a href="delete.php?tweet_id=<?php echo $tweet_view['tweet_id']; ?>" style="color: #F33;">削除</a>]
+            <?php } ?>
+          </p>
         </div>
         <a href="index.php">&laquo;&nbsp;一覧へ戻る</a>
       </div>
@@ -110,15 +92,3 @@
     <script src="assets/js/bootstrap.js"></script>
   </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
