@@ -207,7 +207,7 @@
           <p>
             <?php echo $one_tweet['tweet']; ?><span class="name"> (<?php echo $one_tweet['nick_name']; ?>)</span>
             <?php if($_SESSION['id'] != $one_tweet['member_id']) { ?>
-              [<a href="#">Re</a>]
+              [<a href="reply.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>">Re</a>]
             <?php } ?>
           </p>
           <p class="day">
@@ -223,6 +223,10 @@
             <?php if ($_SESSION['id'] == $one_tweet['member_id']) { ?>
             [<a href="edit.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>" style="color: #00994C;">編集</a>]
             [<a href="delete.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>" style="color: #F33;">削除</a>]
+            <?php } ?>
+            <?php if ($one_tweet['reply_tweet_id'] >= 1) { ?>
+            <!-- 返信元のメッセージの詳細へ -->
+            [<a href="view.php?tweet_id=<?php echo $one_tweet['reply_tweet_id']; ?>" style="color: #a9a9a9;">返信元のメッセージを表示</a>]
             <?php } ?>
           </p>
         </div>
