@@ -1,27 +1,32 @@
 <?php
-  session_start();
+  // function.phpを読み込み
+  require('function.php');
+
+  // ログイン
+  login_check();
+
   // DBの接続
   require('dbconnect.php');
 
-  // ログインチェック
+  // ログインチェックを上でしているため
   // 1時間ログインしていない場合、再度ログイン
-  if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
-    // ログインしている
-    // ログイン時間の更新
-    $_SESSION['time'] = time();
+  // if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
+  //   // ログインしている
+  //   // ログイン時間の更新
+  //   $_SESSION['time'] = time();
 
-    // ログインユーザー情報取得
-    $login_sql = 'SELECT * FROM `members` WHERE `member_id`=?';
-    $login_data = array($_SESSION['id']);
-    $login_stmt = $dbh->prepare($login_sql);
-    $login_stmt->execute($login_data);
-    $login_member = $login_stmt->fetch(PDO::FETCH_ASSOC);
+  // ログインユーザー情報取得
+  $login_sql = 'SELECT * FROM `members` WHERE `member_id`=?';
+  $login_data = array($_SESSION['id']);
+  $login_stmt = $dbh->prepare($login_sql);
+  $login_stmt->execute($login_data);
+  $login_member = $login_stmt->fetch(PDO::FETCH_ASSOC);
 
-  } else {
-    // ログインしていない、または時間切れの場合
-    header('Location: login.php');
-    exit;
-  }
+  // } else {
+  //   // ログインしていない、または時間切れの場合
+  //   header('Location: login.php');
+  //   exit;
+  // }
 
   // つぶやくボタンが押された時
   if (!empty($_POST)) {
@@ -110,14 +115,27 @@
     if ($tweet == false) {
       break;
     }
+    // like数を取得するSQL文
+    $like_sql = 'SELECT COUNT(*) AS `like_count` FROM `likes` WHERE `tweet_id`=?';
+    $like_data = array($tweet['tweet_id']);
+    $like_stmt = $dbh->prepare($like_sql);
+    $like_stmt->execute($like_data);
+
+    // 各投稿ごとのいいね数
+    $like_count = $like_stmt->fetch(PDO::FETCH_ASSOC);
+
+    // 一行分のデータに新しいキーを用意し、$like_countを代入
+    $tweet['like_count'] = $like_count['like_count'];
+
     $tweet_list[] = $tweet;
   }
 
-  // echo '<br>';
-  // echo '<br>';
-  // echo '<pre>';
-  // var_dump($tweet_list);
-  // echo '</pre>';
+
+  echo '<br>';
+  echo '<br>';
+  echo '<pre>';
+  var_dump($like_count);
+  echo '</pre>';
 
 
 ?>
@@ -150,7 +168,7 @@
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="index.html"><span class="strong-title"><i class="fa fa-twitter-square"></i> Seed SNS</span></a>
+              <a class="navbar-brand" href="index.php"><span class="strong-title"><i class="fa fa-twitter-square"></i> Seed SNS</span></a>
           </div>
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -209,6 +227,9 @@
             <?php if($_SESSION['id'] != $one_tweet['member_id']) { ?>
               [<a href="reply.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>">Re</a>]
             <?php } ?>
+            <!-- いいねボタン -->
+            <a href="like.php"><i class="fa fa-thumbs-o-up"></i>いいね！</a>
+            <a href="like.php"><i class="fa fa-thumbs-o-down"></i>よくないねー</a>
           </p>
           <p class="day">
             <a href="view.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>">
@@ -222,7 +243,7 @@
             </a>
             <?php if ($_SESSION['id'] == $one_tweet['member_id']) { ?>
             [<a href="edit.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>" style="color: #00994C;">編集</a>]
-            [<a href="delete.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>" style="color: #F33;">削除</a>]
+            [<a href="delete.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>" style="color: #F33;" onclick="return confirm('本当に削除しますか？');">削除</a>]
             <?php } ?>
             <?php if ($one_tweet['reply_tweet_id'] >= 1) { ?>
             <!-- 返信元のメッセージの詳細へ -->
