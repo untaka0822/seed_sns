@@ -127,16 +127,26 @@
     // 一行分のデータに新しいキーを用意し、$like_countを代入
     $tweet['like_count'] = $like_count['like_count'];
 
+    // ログインしている人がlikeしているかどうかのデータを取得
+    $login_like_sql = 'SELECT COUNT(*) as `login_count` FROM `likes` WHERE `member_id`=? AND `tweet_id`=?';
+    $login_like_data = array($_SESSION['id'], $tweet['tweet_id']);
+    $login_like_stmt = $dbh->prepare($login_like_sql);
+    $login_like_stmt->execute($login_like_data);
+
+    // フェッチで取得
+    $login_like_number = $login_like_stmt->fetch(PDO::FETCH_ASSOC);
+
+    // echo '<br>';
+    // echo '<br>';
+    // echo '<pre>';
+    // var_dump($login_like_number);
+    // echo '</pre>';exit;
+
+    // ログインしているユーザーがいいねしているかどうかの判定
+    $tweet['login_like_flag'] = $login_like_number['login_count'];
+
     $tweet_list[] = $tweet;
   }
-
-
-  echo '<br>';
-  echo '<br>';
-  echo '<pre>';
-  var_dump($like_count);
-  echo '</pre>';
-
 
 ?>
 
@@ -219,7 +229,7 @@
       </div>
 
       <div class="col-md-8 content-margin-top">
-        <?php foreach($tweet_list as $one_tweet) { ?>
+      <?php foreach($tweet_list as $one_tweet) { ?>
         <div class="msg">
           <img src="picture_path/<?php echo $one_tweet['picture_path']; ?>" width="48" height="48">
           <p>
@@ -228,8 +238,11 @@
               [<a href="reply.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>">Re</a>]
             <?php } ?>
             <!-- いいねボタン -->
-            <a href="like.php"><i class="fa fa-thumbs-o-up"></i>いいね！</a>
-            <a href="like.php"><i class="fa fa-thumbs-o-down"></i>よくないねー</a>
+            <?php if ($one_tweet['login_like_flag'] == 0) { ?>
+              <a href="like.php?like_tweet_id=<?php echo $one_tweet['tweet_id']; ?>"><i class="fa fa-thumbs-o-up"></i>いいね！</a>
+            <?php } else { ?>
+              <a href="like.php?unlike_tweet_id=<?php echo $one_tweet['tweet_id']; ?>"><i class="fa fa-thumbs-o-down"></i>よくないねー</a>
+            <?php } ?>
           </p>
           <p class="day">
             <a href="view.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>">
