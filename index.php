@@ -226,6 +226,7 @@
                 <li><?php echo $page; ?> / <?php echo $all_page_number; ?></li>
           </ul>
         </form>
+        <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ffacebook&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=2032268017060519" width="500" height="500" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
       </div>
 
       <div class="col-md-8 content-margin-top">
@@ -239,10 +240,12 @@
             <?php } ?>
             <!-- いいねボタン -->
             <?php if ($one_tweet['login_like_flag'] == 0) { ?>
-              <a href="like.php?like_tweet_id=<?php echo $one_tweet['tweet_id']; ?>"><i class="fa fa-thumbs-o-up"></i>いいね！</a>
+              <a href="like.php?like_tweet_id=<?php echo $one_tweet['tweet_id']; ?>&page=<?php echo $page; ?>"><i class="fa fa-thumbs-o-up"></i>いいね！</a>
             <?php } else { ?>
-              <a href="like.php?unlike_tweet_id=<?php echo $one_tweet['tweet_id']; ?>"><i class="fa fa-thumbs-o-down"></i>よくないねー</a>
+              <a href="like.php?unlike_tweet_id=<?php echo $one_tweet['tweet_id']; ?>&page=<?php echo $page; ?>"><i class="fa fa-thumbs-o-down"></i>よくないねー</a>
             <?php } ?>
+            <!--  いいね数の表示 -->
+            <span style="color: green;">いいね : <?php echo $one_tweet['like_count']; ?>個</span>
           </p>
           <p class="day">
             <a href="view.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>">
