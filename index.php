@@ -245,7 +245,7 @@
               <a href="like.php?unlike_tweet_id=<?php echo $one_tweet['tweet_id']; ?>&page=<?php echo $page; ?>"><i class="fa fa-thumbs-o-down"></i>よくないねー</a>
             <?php } ?>
             <!--  いいね数の表示 -->
-            <span style="color: green;">いいね : <?php echo $one_tweet['like_count']; ?>個</span>
+            <span><a href="like_user.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>&page=<?php echo $page; ?>" style="color: green;">いいね : <?php echo $one_tweet['like_count']; ?>個</a></span>
           </p>
           <p class="day">
             <a href="view.php?tweet_id=<?php echo $one_tweet['tweet_id']; ?>">
