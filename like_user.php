@@ -115,7 +115,7 @@
           <a href="#"><img src="picture_path/<?php echo $user['picture_path']; ?>" width="48" height="48"></a>
           <!-- クリックした時にプロフィールへ -->
           &nbsp;
-          <a href="profile.php" style="font-size: 16px;"><span class="name"><?php echo $user['nick_name']; ?></span></a>
+          <a href="profile.php?member_id=<?php echo $user['member_id']; ?>" style="font-size: 16px;"><span class="name"><?php echo $user['nick_name']; ?></span></a>
 		  &nbsp;
           <!-- <a href="#">
           <button class="btn btn-sm btn-default">フォロー</button>

@@ -230,6 +230,10 @@
       </div>
 
       <div class="col-md-8 content-margin-top">
+        <div class="msg_header">
+          <a href="follow.php">Followers<span class="badge badge-pill badge-default"></span></a>
+          <a href="following.php">Followings<span class="badge badge-pill badge-default"></span></a>
+        </div>
       <?php foreach($tweet_list as $one_tweet) { ?>
         <div class="msg">
           <img src="picture_path/<?php echo $one_tweet['picture_path']; ?>" width="48" height="48">
