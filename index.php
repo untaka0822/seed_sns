@@ -148,6 +148,21 @@
     $tweet_list[] = $tweet;
   }
 
+  // 自分がフォローしているユーザーの数
+  $following_sql = 'SELECT COUNT(*) as `following_count` FROM `follows` WHERE `member_id`=?';
+  $following_data = array($_SESSION['id']);
+  $following_stmt = $dbh->prepare($following_sql);
+  $following_stmt->execute($following_data);
+  $following = $following_stmt->fetch(PDO::FETCH_ASSOC);
+
+  // 自分がフォローされているユーザーの数
+  $follower_sql = 'SELECT COUNT(*) as `follower_count` FROM `follows` WHERE `follower_id`=?';
+  $follower_data = array($_SESSION['id']);
+  $follower_stmt = $dbh->prepare($follower_sql);
+  $follower_stmt->execute($follower_data);
+  $follower = $follower_stmt->fetch(PDO::FETCH_ASSOC);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -231,8 +246,8 @@
 
       <div class="col-md-8 content-margin-top">
         <div class="msg_header">
-          <a href="follow.php">Followers<span class="badge badge-pill badge-default"></span></a>
-          <a href="following.php">Followings<span class="badge badge-pill badge-default"></span></a>
+          <a href="follow.php">Followers<span class="badge badge-pill badge-default"><?php echo $follower['follower_count']; ?></span></a>
+          <a href="following.php">Followings<span class="badge badge-pill badge-default"><?php echo $following['following_count']; ?></span></a>
         </div>
       <?php foreach($tweet_list as $one_tweet) { ?>
         <div class="msg">

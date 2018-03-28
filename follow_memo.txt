@@ -10,4 +10,4 @@ SELECT COUNT(*) AS `following` FROM `follows` WHERE `member_id`=5
 
 ログインしているユーザーのfollowerの数を計算する
 (他のユーザーがmember_id=5のユーザーをフォローしている数)
-SELECT COUNT(*) AS `follower` FROM `follows` WHERE `follower_id`=5
+SELECT COUNT(*) AS `follower` FROM `follows` WHERE `following_id`=5

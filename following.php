@@ -13,50 +13,40 @@
 	// var_dump($login_member);
 
 	// ログインしているユーザーをフォローしているユーザーの情報取得
-	$sql = 'SELECT * FROM `members` LEFT JOIN `follows` ON `members`.`member_id`=`follows`.`member_id` WHERE `follower_id`=?';
+	$sql = 'SELECT `follower_id` FROM `follows` WHERE `member_id`=?';
 	$data = array($_SESSION['id']);
 	$stmt = $dbh->prepare($sql);
 	$stmt->execute($data);
 
 	// データがない時のエラーを防ぐ
-	$follower_list = array();
+	$followings = array();
 
 	// ある件数分だけ処理を回す
 	while(true) {
-		$follower = $stmt->fetch(PDO::FETCH_ASSOC);
-		if ($follower == false) {
+		$following = $stmt->fetch(PDO::FETCH_ASSOC);
+		if ($following == false) {
 			break;
 		}
-		// var_dump($follower);exit;
-		// ログインしているユーザーが取得しているレコードのユーザー($follower)にフォローしているかどうか
-		$fl_flag_sql = 'SELECT COUNT(*) AS `fl_count` FROM `follows` WHERE `member_id`=? AND `follower_id`=?';
-		$fl_flag_data = array($_SESSION['id'], $follower['member_id']);
-		$fl_flag_stmt = $dbh->prepare($fl_flag_sql);
-		$fl_flag_stmt->execute($fl_flag_data);
-		$fl_flag = $fl_flag_stmt->fetch(PDO::FETCH_ASSOC);
-		// 新しいキーを作成し、配列に追加
-		$follower['fl_flag'] = $fl_flag['fl_count'];
-
-		$follower_list[] = $follower;
+		$followings[] = $following;
 	}
+
+  $following_comp = array();
+
+  foreach ($followings as $following) {
+    $fl_sql = 'SELECT * FROM `members` WHERE `member_id`=?';
+    $fl_data = array($following['follower_id']);
+    $fl_stmt = $dbh->prepare($fl_sql);
+    $fl_stmt->execute($fl_data);
+    $following = $fl_stmt->fetch(PDO::FETCH_ASSOC);    
+    $following_comp[] = $following;
+  }
 
 	// echo '<br>';
 	// echo '<br>';
 	// echo '<pre>';
-	// var_dump($follower_list);
+	// var_dump($following_comp);
 	// echo '</pre>';
 
-  // フォロー処理
-  // フォローボタンが押された時データをfollowsテーブルに作成するSQL文
-  if (isset($_GET['follow_id'])) {
-    $fl_sql = 'INSERT INTO `follows` SET `member_id`=?, `follower_id`=?';
-    $fl_data = array($_SESSION['id'], $_GET['follow_id']);
-    $fl_stmt = $dbh->prepare($fl_sql);
-    $fl_stmt->execute($fl_data);
-
-    header('Location: follow.php');
-    exit;
-  }
 
   // フォロー解除処理
   // フォロー解除ボタンが押された時データをfollowsテーブルから削除SQL文
@@ -66,7 +56,7 @@
     $unfl_stmt = $dbh->prepare($unfl_sql);
     $unfl_stmt->execute($unfl_data);
 
-    header('Location: follow.php');
+    header('Location: following.php');
     exit;
   }
 
@@ -127,22 +117,16 @@
       </div>
       <div class="col-md-9 content-margin-top">
         <div class="msg_header">
-        <a href="follow.php">Followers<span class="badge badge-pill badge-default"><?php echo count($follower_list); ?></span></a>
-        <a href="following.php">Followings<span class="badge badge-pill badge-default"></span></a>
+        <a href="follow.php">Followers<span class="badge badge-pill badge-default"></span></a>
+        <a href="following.php">Followings<span class="badge badge-pill badge-default"><?php echo count($following_comp); ?></span></a>
         </div>
-        <?php foreach ($follower_list as $followers) { ?>
+        <?php foreach ($following_comp as $followers) { ?>
         <div class="msg">
           <img src="picture_path/<?php echo $followers['picture_path']; ?>" width="48" height="48">
           <p><span class="name"><?php echo $followers['nick_name']; ?></span></p>
-          <?php if ($followers['fl_flag'] == 0) { ?>
-          <a href="follow.php?follow_id=<?php echo $followers['member_id']; ?>">
-          <button class="btn btn-default">フォロー</button>
-          </a>
-          <?php } else { ?>
-          <a href="follow.php?unfollow_id=<?php echo $followers['member_id']; ?>">
+          <a href="following.php?unfollow_id=<?php echo $followers['member_id']; ?>">
           <button class="btn btn-default">フォロー解除</button>
           </a>
-          <?php } ?>
         </div>
         <?php } ?>
       </div>
