@@ -147,6 +147,12 @@
 
     $tweet_list[] = $tweet;
   }
+  $tweet_list[0]
+  $tweet_list[0]
+  $tweet_list[0]
+  $tweet_list[0]
+  $tweet_list[0]
+  $tweet_list[0]
 
   // 自分がフォローしているユーザーの数
   $following_sql = 'SELECT COUNT(*) as `following_count` FROM `follows` WHERE `member_id`=?';

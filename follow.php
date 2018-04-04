@@ -118,8 +118,7 @@
     <div class="row">
       <div class="col-md-3 content-margin-top">
         <img src="picture_path/<?php echo $login_member['picture_path']; ?>" width="250" height="250">
-        <h3></h3>
-        <a href="profile.php?memebr_id=<?php echo $login_member['member_id']; ?>" class="btn btn-info col-md-12" style="font-size: 24px;">
+        <a href="profile.php?memebr_id=<?php echo $login_member['member_id']; ?>" class="button" style="font-size: 24px;">
           <?php echo $login_member['nick_name']; ?>
         </a>
         <br>
