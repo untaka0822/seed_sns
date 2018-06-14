@@ -1,5 +1,6 @@
 <?php
 	require('function.php');
+  // 処理実行
 	login_check();
 	require('dbconnect.php');
 
